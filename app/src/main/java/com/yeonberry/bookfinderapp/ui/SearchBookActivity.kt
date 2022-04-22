@@ -15,8 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yeonberry.bookfinderapp.R
 import com.yeonberry.bookfinderapp.databinding.ActivitySearchBookBinding
 import com.yeonberry.bookfinderapp.ui.adapter.LoadStateAdapter
-import com.yeonberry.bookfinderapp.util.VerticalSpaceItemDecoration
-import com.yeonberry.bookfinderapp.util.dpToPx
 import com.yeonberry.bookfinderapp.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -43,14 +41,13 @@ class SearchBookActivity : AppCompatActivity() {
                 intent.data = Uri.parse(book.volumeInfo?.infoLink)
                 startActivity(intent)
             } catch (e: Exception) {
-                Toast.makeText(this, R.string.browser_error_toast_message, Toast.LENGTH_SHORT)
+                Toast.makeText(this, R.string.error_message, Toast.LENGTH_SHORT)
                     .show()
             }
         }
 
         binding.rvSearch.apply {
             adapter = searchAdapter.withLoadStateFooter(footer = LoadStateAdapter())
-            addItemDecoration(VerticalSpaceItemDecoration(dpToPx(context, 16)))
         }
 
         searchAdapter.addLoadStateListener { loadState ->
@@ -95,7 +92,7 @@ class SearchBookActivity : AppCompatActivity() {
 
     private fun getUserList() {
         lifecycleScope.launch {
-            viewModel.searchUsers(binding.edtSearch.text.toString())
+            viewModel.searchBooks(binding.edtSearch.text.toString())
                 .observe(this@SearchBookActivity) {
                     searchAdapter.submitData(lifecycle, it)
                 }

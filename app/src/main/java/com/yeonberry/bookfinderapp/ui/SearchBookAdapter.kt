@@ -6,24 +6,68 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.yeonberry.bookfinderapp.R
 import com.yeonberry.bookfinderapp.data.model.Book
+import com.yeonberry.bookfinderapp.data.model.SearchModel
 import com.yeonberry.bookfinderapp.databinding.ItemBookBinding
+import com.yeonberry.bookfinderapp.databinding.ItemTotalCountBinding
 
 class SearchBookAdapter(private val onItemClick: (Book) -> Unit) :
-    PagingDataAdapter<Book, SearchViewHolder>(SearchDiffCallback()) {
+    PagingDataAdapter<SearchModel, RecyclerView.ViewHolder>(SearchModelComparator) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
-        return SearchViewHolder(
-            ItemBookBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            ), onItemClick
-        )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            R.layout.item_total_count -> {
+                TotalCountViewHolder(
+                    ItemTotalCountBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
+                )
+            }
+            else -> {
+                SearchViewHolder(
+                    ItemBookBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    ), onItemClick
+                )
+            }
+        }
     }
 
-    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
-        getItem(position)?.let { holder.bind(it) }
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (val searchModel = getItem(position)) {
+            is SearchModel.TotalCountItem -> {
+                val viewHolder = holder as TotalCountViewHolder
+                viewHolder.bind(searchModel.totalCount)
+            }
+            is SearchModel.BookItem -> {
+                val viewHolder = holder as SearchViewHolder
+                viewHolder.bind(searchModel.book)
+            }
+            else -> throw Exception("")
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is SearchModel.TotalCountItem -> R.layout.item_total_count
+            is SearchModel.BookItem -> R.layout.item_book
+            null -> throw IllegalStateException("Unknown view")
+        }
+    }
+}
+
+class TotalCountViewHolder(
+    private val binding: ItemTotalCountBinding
+) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(totalCount: Int) {
+        binding.apply {
+            tvTotalCount.text = totalCount.toString()
+        }
     }
 }
 
@@ -45,13 +89,22 @@ class SearchViewHolder(
     }
 }
 
-private class SearchDiffCallback : DiffUtil.ItemCallback<Book>() {
+object SearchModelComparator : DiffUtil.ItemCallback<SearchModel>() {
+    override fun areItemsTheSame(
+        oldItem: SearchModel,
+        newItem: SearchModel
+    ): Boolean {
+        val isSameTotalCount = false
 
-    override fun areItemsTheSame(oldItem: Book, newItem: Book): Boolean {
-        return oldItem == newItem
+        val isSameBookItem = oldItem is SearchModel.BookItem
+                && newItem is SearchModel.BookItem
+                && oldItem == newItem
+
+        return isSameTotalCount || isSameBookItem
     }
 
-    override fun areContentsTheSame(oldItem: Book, newItem: Book): Boolean {
-        return oldItem == newItem
-    }
+    override fun areContentsTheSame(
+        oldItem: SearchModel,
+        newItem: SearchModel
+    ) = oldItem == newItem
 }
