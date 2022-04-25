@@ -1,9 +1,8 @@
 package com.yeonberry.bookfinderapp.data.repository
 
-import androidx.lifecycle.LiveData
-import androidx.paging.PagingData
-import com.yeonberry.bookfinderapp.data.model.Book
+import com.yeonberry.bookfinderapp.data.model.SearchResponse
+import retrofit2.Response
 
 interface SearchRepository {
-    suspend fun searchBooks(q: String): LiveData<PagingData<Book>>
+    suspend fun searchBooks(q: String, startIndex: Int): Response<SearchResponse>
 }

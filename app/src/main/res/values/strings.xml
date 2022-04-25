@@ -2,5 +2,6 @@
     <string name="app_name">book-finder-app</string>
     <string name="search_hint_message">검색어를 입력해보세요.</string>
     <string name="search_empty_message">검색 결과가 없습니다.</string>
+    <string name="search_book_total_count">%d개의 검색 결과</string>
     <string name="error_message">error</string>
 </resources>
