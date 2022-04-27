@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.yeonberry.bookfinderapp.data.model.Book
 import com.yeonberry.bookfinderapp.data.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,16 +27,16 @@ class SearchBookViewModel @Inject constructor(
     val isLoading: LiveData<Boolean> get() = _isLoading
 
     fun searchBooks(q: String, startIndex: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _isLoading.postValue(true)
+        viewModelScope.launch {
+            _isLoading.value = true
             val response = repository.searchBooks(q, startIndex)
             if (response.isSuccessful) {
-                totalCount.postValue(response.body()?.totalItems)
-                _bookList.postValue(response.body()?.items)
+                totalCount.value = response.body()?.totalItems
+                _bookList.value = response.body()?.items
             } else {
                 _errorMessage.value = response.code().toString()
             }
-            _isLoading.postValue(false)
+            _isLoading.value = false
         }
     }
 }

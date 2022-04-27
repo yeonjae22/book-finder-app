@@ -104,8 +104,8 @@ class SearchBookActivity : AppCompatActivity() {
                 if (isPaging) {
                     searchAdapter.addAllItem(bookList)
                 } else {
-                    searchAdapter.replaceItem(bookList)
                     searchAdapter.setTotalCount(viewModel.totalCount.value ?: 0)
+                    searchAdapter.replaceItem(bookList)
                 }
             }
             isPaging = false
