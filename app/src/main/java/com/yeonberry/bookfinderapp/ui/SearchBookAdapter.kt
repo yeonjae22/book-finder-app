@@ -1,5 +1,6 @@
 package com.yeonberry.bookfinderapp.ui
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -24,10 +25,11 @@ class SearchBookAdapter(private val onItemClick: (Book) -> Unit) :
         notifyItemRangeChanged(startPoint, itemList.size)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun replaceItem(items: List<Book>) {
         itemList.clear()
         itemList.addAll(items)
-        notifyItemRangeChanged(0, itemList.size)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

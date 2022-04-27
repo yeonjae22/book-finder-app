@@ -24,6 +24,7 @@ class SearchBookActivity : AppCompatActivity() {
     private lateinit var searchAdapter: SearchBookAdapter
     private var page = 1
     private var isPaging = false
+    private var isLoading = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +89,10 @@ class SearchBookActivity : AppCompatActivity() {
     }
 
     private fun searchBooks() {
+        if (isLoading) {
+            return
+        }
+        isLoading = true
         viewModel.searchBooks(binding.edtSearch.text.toString(), page)
         binding.edtSearch.hideKeyboard()
     }
@@ -109,6 +114,7 @@ class SearchBookActivity : AppCompatActivity() {
                 }
             }
             isPaging = false
+            isLoading = false
         }
     }
 
